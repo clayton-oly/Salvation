@@ -10,7 +10,7 @@ namespace Salvation.Data
         public SalvationDbContext(DbContextOptions<SalvationDbContext> options) : base(options) { }
 
         //propriedades DbSets representam nossas tabelas
-        public DbSet<Classificacao> Classificacao { get; set; }
+        public DbSet<Classificacao> Classificacoes { get; set; }
         public DbSet<Genero> Generos { get; set; }
         public DbSet<Filme> Filmes { get; set; }
         public DbSet<TipoUsuario> TipoUsuarios { get; set; }
