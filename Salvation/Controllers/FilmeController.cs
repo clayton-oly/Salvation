@@ -117,7 +117,85 @@ namespace Salvation.Controllers
         }
 
         //edit
+        [Authorize(Roles = "Administrador, Gerente")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var filme = await _filmeRepository.GetByIdAsync(id);
+            if (filme == null) return NotFound();
+
+            var viewModel = new FilmeViewModel
+            {
+                IdFilme = filme.IdFilme,
+                TituloFilme = filme.Titulo,
+                ProdutoraFilme = filme.Produtora,
+                UrlImagem = filme.UrlImagem,
+                GeneroId = filme.GeneroId,
+                ClassificacaoId = filme.ClassificacaoId,
+                Generos = (await _generoRepository.GetAllAsync()).Select(g => new SelectListItem
+                {
+                    Value = g.IdGenero.ToString(),
+                    Text = g.DescricaoGenero
+
+                }),
+                Classificacoes = (await _classificacaoRepository.GetAllAsync()).Select(g => new SelectListItem
+                {
+                    Value = g.IdClassificacao.ToString(),
+                    Text = g.DescricaoClassificacao
+                })
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, FilmeViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                var filme = await _filmeRepository.GetByIdAsync(id);
+                if (filme == null) return NotFound();
+
+                filme.Titulo = viewModel.TituloFilme;
+                filme.Produtora = viewModel.ProdutoraFilme;
+                filme.ClassificacaoId = viewModel.ClassificacaoId;
+                filme.GeneroId = viewModel.GeneroId;
+
+                if (viewModel.ImagemUpload != null)
+                {
+                    var nomeArquivo = Guid.NewGuid() + Path.GetExtension(viewModel.ImagemUpload.FileName);
+                    var caminhoPasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img");
+                    var caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
+                    using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+                    {
+                        await viewModel.ImagemUpload.CopyToAsync(stream);
+                    }
+                    filme.UrlImagem = "/img/" + nomeArquivo;
+                }
+                await _filmeRepository.UpdateAsync(filme);
+                return RedirectToAction(nameof(Index));
+            }
+            viewModel = await CriarFilmeViewModel(viewModel);
+            return View(viewModel);
+
+        }
 
         //delete
+        [Authorize(Roles = "Administrador,Gerente")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var filme = await _filmeRepository.GetByIdAsync(id);
+            if (filme == null) return NotFound();
+
+            return View(filme);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _filmeRepository.DeleteAsync(id);
+            return RedirectToAction(nameof(Index)); 
+        }
     }
 }
