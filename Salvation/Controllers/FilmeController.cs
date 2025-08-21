@@ -51,7 +51,7 @@ namespace Salvation.Controllers
         }
 
         //index
-        [Authorize(Roles = "Administrador, Gerente, Outros")]
+        //[Authorize(Roles = "Administrador, Gerente, Outros")]
         public async Task<IActionResult> Index(int? generoId, string? search)
         {
             var filmes = await _filmeRepository.GetAllAsync();
