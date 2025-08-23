@@ -76,7 +76,7 @@ namespace Salvation.Controllers
         }
 
         //create
-        [Authorize(Roles = "Administrador, Gerente")]
+        //[Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Create()
         {
             var model = await CriarFilmeViewModel();
