@@ -98,7 +98,7 @@ namespace Salvation.Controllers
                     //criar a pasta se não existir
                     using var stream = new FileStream(caminho, FileMode.Create);
                     await viewModel.ImagemUpload.CopyToAsync(stream);
-                    caminhoImagem = "/img" + nomeArquivo;
+                    caminhoImagem = "/img/" + nomeArquivo;
                 }
 
                 var filme = new Filme
@@ -151,7 +151,7 @@ namespace Salvation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, FilmeViewModel viewModel)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var filme = await _filmeRepository.GetByIdAsync(id);
                 if (filme == null) return NotFound();
