@@ -20,24 +20,31 @@ namespace Salvation.Repositories
         }
 
         //stand by
-        public Task AddAsync(TipoUsuario tipoUsuario)
+        public async Task AddAsync(TipoUsuario tipoUsuario)
         {
-            throw new NotImplementedException();
+            await _context.TipoUsuarios.AddAsync(tipoUsuario);
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var tipoUsuario = await _context.TipoUsuarios.FindAsync(id);
+            if (tipoUsuario != null)
+            {
+                _context.TipoUsuarios.Remove(tipoUsuario);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task<TipoUsuario> GetByIdAsync(int id)
+        public async Task<TipoUsuario> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.TipoUsuarios.FirstOrDefaultAsync(g => g.IdTipoUsuario == id);
         }
 
-        public Task UpdateAsync(TipoUsuario tipoUsuario)
+        public async Task UpdateAsync(TipoUsuario tipoUsuario)
         {
-            throw new NotImplementedException();
+            _context.TipoUsuarios.Update(tipoUsuario);
+            await _context.SaveChangesAsync();
         }
     }
 }

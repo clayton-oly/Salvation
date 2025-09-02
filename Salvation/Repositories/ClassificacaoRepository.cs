@@ -7,37 +7,45 @@ namespace Salvation.Repositories
 {
     public class ClassificacaoRepository : IClassificacaoRepository
     {
+        //campo de apoio
         private readonly SalvationDbContext _context;
+        //injeção de dependência no construtor
         public ClassificacaoRepository(SalvationDbContext context)
         {
             _context = context;
         }
 
-        //implementar somente este metodo
+        public async Task AddAsync(Classificacao classificacao)
+        {
+            _context.Classificacoes.Add(classificacao);
+            await _context.SaveChangesAsync();
+        }
+
+        //listar todas as classificações
         public async Task<List<Classificacao>> GetAllAsync()
         {
-            return await _context.Classificacoes.ToListAsync();
+            return await _context.Classificacoes.Include(c => c.Filmes).ToListAsync();
         }
 
-        //stand by
-        public Task AddAsync(Classificacao classificacao)
+        public async Task<Classificacao> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Classificacoes.Include(c => c.Filmes).FirstOrDefaultAsync(c => c.IdClassificacao == id);
         }
 
-        public Task DeleteAsync(int id)
+        public async Task UpdateAsync(Classificacao classificacao)
         {
-            throw new NotImplementedException();
+            _context.Classificacoes.Update(classificacao);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<Classificacao> GetByIdAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(Classificacao classificacao)
-        {
-            throw new NotImplementedException();
+            var classificacao = await _context.Classificacoes.FindAsync(id);
+            if (classificacao != null)
+            {
+                _context.Classificacoes.Remove(classificacao);
+                _context.SaveChanges();
+            }
         }
     }
 }
